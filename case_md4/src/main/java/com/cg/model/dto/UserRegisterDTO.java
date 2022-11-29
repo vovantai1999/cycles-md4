@@ -18,13 +18,13 @@ public class UserRegisterDTO {
 
     private Long id;
 
-    @NotBlank(message = "The email is required")
-    @Email(message = "The email address is invalid")
-    @Size(max = 50, message = "The length of email must be between 5 and 50 characters")
+    @NotBlank(message = "email là bắt buộc")
+    @Email(message = "địa chỉ email không hợp lệ")
+    @Size(max = 50, message = "Độ dài của email phải từ 5 đến 50 ký tự")
     private String username;
 
-    @NotBlank(message = "The password is required")
-    @Size(max = 30, message = "Maximum password length 30 characters")
+    @NotBlank(message = "mật khẩu là bắt buộc")
+    @Size(max = 30, message = "Độ dài mật khẩu tối đa 30 ký tự")
     private String password;
 
     @Valid

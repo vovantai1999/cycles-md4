@@ -31,7 +31,7 @@ public class UserDTO {
     private String username;
 
     @NotBlank(message = "Password không được bỏ trống")
-    @Size(min = 8, message = "Mật khẩu có độ dài ít nhất 8 kí tự")
+    @Size(min = 3, message = "Mật khẩu có độ dài ít nhất 8 kí tự")
     private String password;
 
     @Valid
