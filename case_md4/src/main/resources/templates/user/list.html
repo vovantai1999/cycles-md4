@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>List of User</title>
+    <th:block th:replace="layout/head"/>
+</head>
+<body data-layout="horizontal">
+
+<!-- Begin page -->
+<div id="wrapper">
+
+    <!-- Navigation Bar-->
+    <th:block th:replace="layout/top_nav"/>
+    <!-- End Navigation Bar-->
+
+    <!-- ============================================================== -->
+    <!-- Start Page Content here -->
+    <!-- ============================================================== -->
+
+    <div class="content-page">
+        <div class="content">
+
+            <!-- Start Content-->
+            <div class="container-fluid">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Honda</a></li>
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Yamaha</a></li>
+                                    <li class="breadcrumb-item active">Suzuki</li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">MotorBike</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+<!--                <div class="col-3">-->
+<!--                    <div>-->
+<!--                        <button class="btn btn-outline-primary" id="btnShowCreateModal">-->
+<!--                            <i class="fa fa-plus"></i> Add new product-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card-box">
+                            <div class="table-responsive">
+                                <table id="tbUser" class="table table-centered table-nowrap mb-0">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th>ID
+                                        <th>Phone</th>
+                                        <th>Username</th>
+                                        <th>Role</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- end row -->
+
+                        </div>
+                        <!-- end card-box -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+
+            </div>
+            <!-- end container-fluid -->
+
+        </div>
+        <!-- end content -->
+
+
+
+        <!-- Footer Start -->
+        <th:block th:replace="layout/footer"/>
+        <!-- end Footer -->
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- End Page content -->
+    <!-- ============================================================== -->
+
+</div>
+<!-- END wrapper -->
+
+<!-- Right Sidebar -->
+<!--<th:block th:replace="layout/right_bar"/>-->
+
+<!--<th:block th:replace="layout/footer_js"/>-->
+<th:block th:replace="/layout/script:: script"></th:block>
+
+<th:block th:replace="/user/modalUpdate :: modalUpdate"></th:block>
+
+<script>
+    let page = {
+        urls: {
+            getAllUser: App.BASE_URL_USER,
+            getUserById: App.BASE_URL_USER,
+        },
+        elements: {},
+        loadData: {},
+        commands: {},
+        dialogs: {
+            elements: {},
+            loadData: {},
+            commands: {},
+        },
+        initializeEventControl: {}
+    }
+
+    let user = new User();
+    let role = new Role();
+
+    page.elements.tbUser = $("#tbUser tbody");
+
+    page.dialogs.elements.frmUpdate = $("#frmUpdate");
+    page.dialogs.elements.usernameUp = $("#usernameUp");
+    page.dialogs.elements.phoneUp = $("#phoneUp");
+    page.dialogs.elements.roleUp = $("#roleUp");
+
+
+    page.commands.getAllUser = () => {
+        $.ajax({
+            headers: {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            type: "GET",
+            url: page.urls.getAllUser
+        })
+            .done((data) => {
+                data.map(item => {
+                    page.elements.tbUser.prepend(App.renderRowUser(item));
+                });
+
+                page.commands.handleOpenModalUpdate();
+                page.commands.initTooltip();
+            })
+            .fail((jqXHR) => {
+                App.SweetAlert.showAlertError(App.AlertMessageVi.ERROR_500);
+            })
+    }
+
+    page.loadData = () => {
+        page.commands.getAllUser();
+    };
+
+    $(() => {
+        page.loadData();
+    });
+</script>
+
+</body>
+
+</html>

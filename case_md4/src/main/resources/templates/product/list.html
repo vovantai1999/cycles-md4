@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>List of products</title>
+    <th:block th:replace="layout/head"/>
+</head>
+<body data-layout="horizontal">
+
+<!-- Begin page -->
+<div id="wrapper">
+
+    <!-- Navigation Bar-->
+    <th:block th:replace="layout/top_nav"/>
+    <!-- End Navigation Bar-->
+
+    <!-- ============================================================== -->
+    <!-- Start Page Content here -->
+    <!-- ============================================================== -->
+
+    <div class="content-page">
+        <div class="content">
+
+            <!-- Start Content-->
+            <div class="container-fluid">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Apple</a></li>
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Samsung</a></li>
+                                    <li class="breadcrumb-item active">World style</li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">Headphone</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+                <div class="col-3">
+                    <div>
+                        <button class="btn btn-outline-primary" id="btnShowCreateModal">
+                            <i class="fa fa-plus"></i> Add new product
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card-box">
+                            <div class="table-responsive">
+                                <table id="tbProduct" class="table table-centered table-nowrap mb-0">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Product Name</th>
+                                        <th>Image</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Brand</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- end row -->
+
+                        </div>
+                        <!-- end card-box -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+
+            </div>
+            <!-- end container-fluid -->
+
+        </div>
+        <!-- end content -->
+
+
+
+        <!-- Footer Start -->
+        <th:block th:replace="layout/footer"/>
+        <!-- end Footer -->
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- End Page content -->
+    <!-- ============================================================== -->
+
+</div>
+<!-- END wrapper -->
+
+<!-- Right Sidebar -->
+<!--<th:block th:replace="layout/right_bar"/>-->
+
+<!--<th:block th:replace="layout/footer_js"/>-->
+<th:block th:replace="/layout/script:: script"></th:block>
+
+<th:block th:replace="/product/modalCreate :: modalCreate"></th:block>
+
+<th:block th:replace="/product/modalUpdate :: modalUpdate"></th:block>
+
+<script>
+    let page = {
+        urls: {
+            getAllProducts: App.BASE_URL_PRODUCT,
+            getProductById: App.BASE_URL_PRODUCT,
+            getAllCategory: App.BASE_URL_CATEGORY,
+            createProduct: App.BASE_URL_PRODUCT + "/create",
+            delete: App.BASE_URL_PRODUCT + "/delete/"
+        },
+        elements: {},
+        loadData: {},
+        commands: {},
+        dialogs: {
+            elements: {},
+            loadData: {},
+            commands: {},
+    },
+        initializeEventControl: {}
+    }
+
+    let category = new Category();
+    let product = new Product();
+
+    page.elements.tbProduct = $("#tbProduct tbody");
+    page.elements.modalCreate = $("#modalCreate");
+    page.elements.modalUpdate = $("#modalUpdate");
+
+    page.dialogs.elements.frmCreate = $("#frmCreate");
+    page.dialogs.elements.nameCre = $("#nameCre");
+    page.dialogs.elements.imageCre = $("#imageCre");
+    page.dialogs.elements.quantityCre = $("#quantityCre");
+    page.dialogs.elements.priceCre = $("#priceCre");
+    page.dialogs.elements.categoryCre = $("#categoryCre");
+    page.dialogs.elements.btnCreate = $("#btnCreate");
+
+    page.dialogs.elements.frmUpdate = $("#frmUpdate");
+    page.dialogs.elements.nameUp = $("#nameUp");
+    page.dialogs.elements.imageUp = $("#imageUp");
+    page.dialogs.elements.quantityUp = $("#quantityUp");
+    page.dialogs.elements.priceUp = $("#priceUp");
+    page.dialogs.elements.categoryUp = $("#categoryUp");
+    page.dialogs.elements.btnUpdate = $("#btnUpdate");
+
+    page.commands.getAllProducts = () => {
+        $.ajax({
+            headers: {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            type: "GET",
+            url: page.urls.getAllProducts
+        })
+            .done((data) => {
+                data.map(item => {
+                    page.elements.tbProduct.prepend(App.renderRowProduct(item));
+                });
+
+                handleDelete();
+                showCategory();
+                page.commands.handleOpenModalUpdate();
+                page.commands.initTooltip();
+            })
+            .fail((jqXHR) => {
+                App.SweetAlert.showAlertError(App.AlertMessageVi.ERROR_500);
+            })
+    }
+
+    page.commands.getProductById = (productId) => {
+        return $.ajax({
+            headers: {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            type: "GET",
+            url: page.urls.getProductById + "/" + productId
+        })
+            .done((data) => {
+                product = data;
+            })
+            .fail((jqXHR) => {
+                App.SweetAlert.showAlertError("Không tìm thấy Id!");
+            });
+    }
+
+    $("#btnShowCreateModal").on("click", () => {
+        showCategory();
+        $("#modalCreate").modal("show");
+    });
+
+    page.dialogs.elements.btnCreate.on("click", () => {
+        page.dialogs.elements.frmCreate.trigger("submit");
+    });
+
+    page.dialogs.elements.btnUpdate.on("click", () => {
+        page.dialogs.elements.frmUpdate.trigger("submit");
+    });
+
+    page.commands.handleOpenModalUpdate = () => {
+        $(".update").on("click", function () {
+            let productId = $(this).data("id");
+
+            page.commands.getProductById(productId).then((result) => {
+                $("#nameUp").val(result.name);
+                $("#imageUp").val(result.image);
+                $("#quantityUp").val(result.quantity);
+                $("#priceUp").val(result.price);
+                $("#categoryUp").val(result.category.id);
+
+                $("#modalUpdate").modal("show");
+            })
+        });
+    }
+
+
+    function handleDelete() {
+        $(".block").on("click", function () {
+            let id = $(this).data("id");
+            page.commands.getProductById(id).then(function () {
+                App.SweetAlert.showSuspendedConfirmDialog()
+                    .then((result) => {
+                        if (result.isConfirmed)
+                            suspended();
+                    });
+            })
+        })
+    }
+
+
+    function suspended() {
+        $.ajax({
+            headers: {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            type: "DELETE",
+            url: "http://localhost:8080/api/products/delete/" + product.id,
+            data: JSON.stringify(product)
+        })
+            .done((item) => {
+                console.log(item);
+                let currentRow = $('#tr_' + item);
+                currentRow.replaceWith("");
+                handleDelete();
+                showCategory();
+
+                App.SweetAlert.showAlertSuccess(App.AlertMessageVi.SUCCESS_DEACTIVATE);
+            })
+            .fail((jqXHR) => {
+                App.SweetAlert.showAlertError(App.AlertMessageVi.ERROR_400);
+            });
+    };
+
+
+    function showCategory() {
+        $.ajax({
+            type: "GET",
+            url: page.urls.getAllCategory
+        }).done((data) => {
+            $("#categoryCre").empty();
+            $("#categoryUp").empty();
+
+            $.each(data, (i, item) => {
+                let str = `<option value="${item.id}" >${item.name}</option>`;
+                $("#categoryCre").append(str);
+                $("#categoryUp").append(str);
+            })
+        })
+            .fail((err) => {
+               App.SweetAlert.showAlertError("Không thể tải dữ liệu nhãn hàng!");
+            })
+    }
+
+    page.commands.createProduct = () => {
+        category.id = $("#categoryCre").val();
+        category.name =  $("#categoryCre option:selected").text();
+
+        product.id = 0;
+        product.name = page.dialogs.elements.nameCre.val();
+        product.image = page.dialogs.elements.imageCre.val();
+        product.quantity = page.dialogs.elements.quantityCre.val();
+        product.price = page.dialogs.elements.priceCre.val();
+        product.category = category;
+        product.isDeleted = false;
+
+        $.ajax({
+            headers: {
+                accept: "application/json",
+                "content-type": "application/json",
+            },
+            type: "POST",
+            url: page.urls.createProduct,
+            data: JSON.stringify(product),
+        })
+            .done((data) => {
+                page.elements.tbProduct.prepend(
+                    App.renderRowProduct(data)
+                );
+
+                page.commands.handleOpenModalUpdate();
+                page.commands.initTooltip();
+                page.elements.modalCreate.modal("hide");
+
+                App.SweetAlert.showAlertSuccess(App.AlertMessageVi.SUCCESS_CREATED);
+            })
+            .fail((jqXHR) => {
+                App.SweetAlert.showAlertError(App.AlertMessageVi.ERROR_400);
+            });
+    }
+    page.commands.updateProduct = () => {
+        category.id = $("#categoryUp").val();
+        category.name =  $("#categoryUp option:selected").text();
+
+        product.name = page.dialogs.elements.nameUp.val();
+        product.image = page.dialogs.elements.imageUp.val();
+        product.quantity = page.dialogs.elements.quantityUp.val();
+        product.price = page.dialogs.elements.priceUp.val();
+        product.category = category;
+        console.log(product);
+
+        $.ajax({
+            headers: {
+                accept: "application/json",
+                "content-type": "application/json",
+            },
+            type: "PUT",
+            url: "http://localhost:8080/api/products/edit/" + product.id,
+            data: JSON.stringify(product),
+        })
+            .done((data) => {
+                let currentRow = $("#tr_" + data.id);
+
+                currentRow.replaceWith(App.renderRowProduct(data));
+
+                page.commands.handleOpenModalUpdate();
+                page.commands.initTooltip();
+                page.elements.modalUpdate.modal("hide");
+
+                App.SweetAlert.showAlertSuccess(App.AlertMessageVi.SUCCESS_UPDATED);
+            })
+            .fail((jqXHR) => {
+                App.SweetAlert.showAlertError(App.AlertMessageVi.ERROR_400);
+            });
+    }
+
+
+    page.dialogs.elements.frmCreate.validate({
+        rules: {
+            nameCre: {
+                required: true,
+                minlength: 5,
+                maxlength: 50
+            },
+            imageCre: {
+                required: true,
+            },
+            quantityCre: {
+                required: true,
+                min: 1,
+                max: 1000000
+            },
+            priceCre: {
+                required: true,
+                min: 0,
+                max: 1000000000
+            }
+        },
+        messages: {
+            nameCre: {
+                required: "Vui lòng nhập tên sản phẩm",
+                minlength: "Tên sản phẩm tên tối thiểu 5 ký tự",
+                maxlength: "Tên sản phẩm tối đa 50 ký tự"
+            },
+            imageCre: {
+                required: "Vui lòng nhập đường đẫn ảnh",
+            },
+            quantityCre: {
+                required: "Vui lòng nhập số lượng",
+                min: "Số lượng tối thiểu 1 ",
+                max: "Số lượng tối đa 1000000 "
+            },
+            priceCre: {
+                required: "Vui lòng nhập giá",
+                min: "Giá sản phẩm tối thiểu 0đ!",
+                max: "Giá sản phẩm tối đa 1000000000đ!"
+            },
+        },
+        submitHandler: function () {
+            page.commands.createProduct();
+        },
+    });
+
+    page.dialogs.elements.frmUpdate.validate({
+        rules: {
+            nameUp: {
+                required: true,
+                minlength: 3,
+                maxlength: 50
+            },
+            imageUp: {
+                required: true,
+            },
+            quantityUp: {
+                required: true,
+                min: 1,
+                max: 1000000
+            },
+            priceUp: {
+                required: true,
+                min: 0,
+                max: 1000000000
+            }
+        },
+        messages: {
+            nameUp: {
+                required: "Vui lòng nhập tên sản phẩm",
+                minlength: "Tên sản phẩm tên tối thiểu 5 ký tự",
+                maxlength: "Tên sản phẩm tối đa 50 ký tự"
+            },
+            imageUp: {
+                required: "Vui lòng nhập đường đẫn ảnh",
+            },
+            quantityUp: {
+                required: "Vui lòng nhập số lượng",
+                min: "Số lượng tối thiểu 1 ",
+                max: "Số lượng tối đa 1000000 "
+            },
+            priceUp: {
+                required: "Vui lòng nhập giá",
+                min: "Giá sản phẩm tối thiểu 0đ!",
+                max: "Giá sản phẩm tối đa 1000000000đ!"
+            },
+        },
+        submitHandler: function () {
+            page.commands.updateProduct();
+        },
+    });
+
+    page.commands.handleCloseModalCreate = () => {
+        page.dialogs.elements.modalCreate.on("hidden.bs.modal", () => {
+            page.dialogs.elements.frmCreate[0].reset();
+            page.dialogs.elements.frmCreate.validate().resetForm();
+        });
+    };
+
+    page.commands.handleCloseModalUpdate = () => {
+        page.dialogs.elements.modalUpdate.on("hidden.bs.modal", () => {
+            page.dialogs.elements.frmUpdate[0].reset();
+            page.dialogs.elements.frmUpdate.validate().resetForm();
+        });
+    };
+
+
+    page.commands.initTooltip = () => {
+        const tooltipTriggerList = document.querySelectorAll(
+            '[data-bs-toggle="tooltip"]'
+        );
+        const tooltipList = [...tooltipTriggerList].map(
+            (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+        );
+    };
+
+    page.initializeEventControl = () => {
+        page.commands.handleCloseModalCreate();
+        page.commands.handleCloseModalUpdate();
+
+    };
+
+    page.loadData = () => {
+        page.commands.getAllProducts();
+    };
+
+    $(() => {
+        page.loadData();
+        page.initializeEventControl();
+    });
+
+</script>
+
+</body>
+
+</html>

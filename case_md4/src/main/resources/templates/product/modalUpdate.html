@@ -1,0 +1,48 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<th:block th:fragment="modalUpdate">
+    <div id="modalUpdate" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-alert-danger hide"></div>
+                    <form id="frmUpdate" method="post">
+                        <fieldset class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Product name: </label>
+                                <input type="text" class="form-control" id="nameUp" name="nameUp">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Image: </label>
+                                <input type="text" class="form-control" id="imageUp" name="imageUp" value="">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Quantity: </label>
+                                <input type="number" class="form-control" id="quantityUp" name="quantityUp">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Price: </label>
+                                <input type="number" class="form-control" id="priceUp" name="priceUp">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Category: </label>
+                                <select class="form-control" id="categoryUp" name="categoryUp"></select>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="btnUpdate" class="btn btn-outline-primary">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                        Update product
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>

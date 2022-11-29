@@ -1,0 +1,49 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<th:block th:fragment="modalCreate">
+    <div id="modalCreate" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Product</h5>
+                    <button type="button" class="btn-close" value="Close" aria-label="Close"
+                            data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-alert-danger hide"></div>
+                    <form id="frmCreate" method="post">
+                        <fieldset class="row ">
+                            <div class="col-md-6">
+                                <label class="form-label">Product name: </label>
+                                <input type="text" class="form-control" id="nameCre" name="nameCre">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Image: </label>
+                                <input type="text" class="form-control" id="imageCre" name="imageCre">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Quantity: </label>
+                                <input type="number" class="form-control" id="quantityCre" name="quantityCre">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Price: </label>
+                                <input type="number" class="form-control" id="priceCre" name="priceCre">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Category: </label>
+                                <select class="form-control" id="categoryCre" name="categoryCre"></select>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="btnCreate" class="btn btn-primary">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                        Create product
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>

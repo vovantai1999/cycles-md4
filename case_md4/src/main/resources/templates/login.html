@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LOGIN</title>
+    <link rel="stylesheet" href="/assets/izitoast/v1.4.0/iziToast-1.4.0.min.css">
+    <th:block th:replace="layout/head"/>
+    <link rel="stylesheet" href="/assets/css/login.css">
+</head>
+<body>
+<!-- Pills navs -->
+
+<a href="https://front.codes/" class="logo" target="_blank">
+
+</a>
+
+<div class="section">
+    <div class="container">
+        <div class="row full-height justify-content-center">
+            <div class="col-12 text-center align-self-center py-5">
+                <div class="section pb-5 pt-5 pt-sm-2 text-center">
+                    <h6 class="mb-0 pb-3"><span>Log In </span><span>Sign Up</span></h6>
+                    <input class="checkbox" type="checkbox" id="reg-log" name="reg-log"/>
+                    <label for="reg-log"></label>
+                    <div class="card-3d-wrap mx-auto">
+                        <div class="card-3d-wrapper">
+                            <div class="card-front">
+                                <div class="center-wrap">
+                                    <div class="section text-center">
+                                        <h4 class="mb-4 pb-3">Log In</h4>
+                                        <div class="form-group">
+                                            <input type="email" name="emailLogin" class="form-style" placeholder="Your Email" id="emailLogin" autocomplete="off">
+                                            <i class="input-icon uil uil-at"></i>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <input type="password" name="passwordLogin" class="form-style" placeholder="Your Password" id="passwordLogin" autocomplete="off">
+                                            <i class="input-icon uil uil-lock-alt"></i>
+                                        </div>
+                                        <button id="btnLogin" class="btn mt-4">Login</button>
+                                        <!--                                        <a href="#" class="btn mt-4">submit</a>-->
+                                        <p class="mb-0 mt-4 text-center"><a href="#0" class="link">Forgot your password?</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="center-wrap">
+                                    <div class="section text-center">
+                                        <h4 class="mb-4 pb-3">Sign Up</h4>
+                                        <div class="form-group">
+                                            <input type="email" name="emailSingnup" class="form-style" placeholder="Your Email" id="emailSingnup" autocomplete="off">
+                                            <i class="input-icon uil uil-user"></i>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <input type="password" name="passwordSignup" class="form-style" placeholder="Your Password" id="passwordSignup" autocomplete="off">
+                                            <i class="input-icon uil uil-at"></i>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <input type="number" name="phoneSingup" class="form-style" placeholder="Your Phone" id="phoneSingup" autocomplete="off">
+                                            <i class="input-icon uil uil-lock-alt"></i>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <label for="role">Role group</label>
+                                            <select name="role" id="role">
+                                                <option value="1">Admin role</option>
+                                                <option value="2">User role</option>
+                                            </select>
+                                        </div>
+                                        <button id="btnSingup" class="btn mt-4">Register</button>
+                                        <!--                                        <a href="#" class="btn mt-4">submit</a>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/assets/jquery/jquery-v3.6.0.min.js"></script>
+<script src="/assets/izitoast/v1.4.0/iziToast-1.4.0.js"></script>
+
+<script src="/assets/js/app.js"></script>
+
+<script>
+    const page = {
+        urls: {
+            login: App.BASE_URL_AUTH + "/login",
+            register: App.BASE_URL_AUTH + "/register"
+        },
+        elements: {},
+        commands: {},
+        initializeEventControl: {}
+    }
+
+    page.elements.emailLogin = $("#emailLogin");
+    page.elements.passwordLogin = $("#passwordLogin");
+    page.elements.btnLogin = $("#btnLogin");
+
+    page.elements.emailSingnup = $("#emailSingnup");
+    page.elements.passwordSignup = $("#passwordSignup");
+    page.elements.phoneSingup = $("#phoneSingup");
+    page.elements.role = $("#role");
+    page.elements.btnSingup = $("#btnSingup");
+
+    page.commands.register = () => {
+
+        let user = {
+            "username": page.elements.emailSingnup.val(),
+            "password": page.elements.passwordSignup.val(),
+            "phone": page.elements.phoneSingup.val(),
+            "role": {
+                "id": page.elements.role.val()
+            }
+        }
+            $.ajax({
+                headers: {
+                    "accept": "application/json",
+                    "content-type": "application/json"
+                },
+                type: "POST",
+                url: page.urls.register,
+                data: JSON.stringify(user)
+            })
+                .done(() => {
+                    App.IziToast.showSuccessAlert("Register Successful!");
+                })
+                .fail(() => {
+                    App.IziToast.showErrorAlert("Error!")
+                })
+    }
+
+    page.commands.login = () => {
+        let user = {
+            "username": page.elements.emailLogin.val(),
+            "password": page.elements.passwordLogin.val()
+        }
+
+        $.ajax({
+            headers: {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            type: "POST",
+            url: page.urls.login,
+            data: JSON.stringify(user)
+        })
+            .done(() => {
+                App.IziToast.showSuccessAlert("Login Success");
+
+                setTimeout(() => {
+                    window.location.href = "/home";
+                }, 1000)
+            })
+            .fail(() => {
+                App.IziToast.showErrorAlert("Login fail");
+            })
+    }
+
+    page.initializeEventControl = () => {
+
+        page.elements.btnSingup.on("click", () => {
+            page.commands.register();
+
+        })
+
+        page.elements.btnLogin.on("click", () => {
+            page.commands.login();
+        })
+    }
+
+    $(() => {
+        page.initializeEventControl();
+    })
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">-->
+
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta http-equiv="X-UA-Compatible" content="IE=edge">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Document</title>-->
+<!--    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">-->
+<!--    <link rel="stylesheet" href="/assets/font-awesome/all.min.css">-->
+<!--    <link rel="stylesheet" href="/assets/sweetalert/sweetalert/sweetalert2.min.css">-->
+<!--    <link rel="stylesheet" href="/assets/css/style.css">-->
+<!--</head>-->
+
+<!--<body>-->
+
+<!--<div class="login-wrap">-->
+<!--    <div class="login-html">-->
+<!--        <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign-->
+<!--        In</label>-->
+<!--        <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>-->
+<!--        <div class="login-form">-->
+<!--            <div class="sign-in-htm" id="mdLogin">-->
+<!--                <div class="modal-alert-danger hide"></div>-->
+<!--                <form action="" id="frmLogin">-->
+<!--                    <div class="group">-->
+<!--                        <input id="usernameLog" name="usernameLog" type="text" class="input" placeholder="Username">-->
+<!--                    </div>-->
+<!--                    <div class="group">-->
+<!--                        <input id="passwordLog" name="passwordLog" type="password" class="input" data-type="password"-->
+<!--                               placeholder="Password">-->
+<!--                    </div>-->
+<!--                    <div class="group">-->
+<!--                        <input id="check" type="checkbox" class="check" checked>-->
+<!--                        <label for="check"><span class="icon"></span> Keep me Signed in</label>-->
+<!--                    </div>-->
+<!--                    <div class="group">-->
+<!--                        <button type="button" id="btnLogin" class="button">Sign In</button>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="sign-up-htm" id="mdRegiter">-->
+<!--                <div class="modal-alert-danger hide"></div>-->
+<!--                <form action="" id="frmRegiter" >-->
+<!--                    <div class="group">-->
+<!--                        <input id="usernameReg" name="usernameReg" type="text" class="input" placeholder="Email">-->
+<!--                    </div>-->
+<!--                    <div class="group">-->
+<!--                        <input id="passwordReg" name="passwordReg" type="password" class="input" data-type="password"-->
+<!--                               placeholder="Password">-->
+<!--                    </div>-->
+<!--                    <div class="group">-->
+<!--                        <input id="rePasswordReg" name="rePasswordReg" type="password" class="input"-->
+<!--                               data-type="password" placeholder="Repeat Password">-->
+<!--                    </div>-->
+<!--                    &lt;!&ndash;                    <div class="group ">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                        <input type="file" id="imageFile" name="imageFile"&ndash;&gt;-->
+<!--                    &lt;!&ndash;                               accept="image/png, image/jpg, image/gif, image/jpeg" class="input">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--                    <div class="group">-->
+<!--                        <button type="button" id="btnRegiter" class="button">Sign Up</button>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script type="text/javascript" src="/assets/jquery/jquery-v3.6.0.min.js"></script>-->
+<!--<script type="text/javascript" src="/assets/js/bootstrap.bundle.min.js"></script>-->
+<!--<script type="text/javascript" src="/assets/sweetalert/sweetalert/sweetalert2.all.min.js"></script>-->
+<!--<script type="text/javascript" src="/assets/jquery/jquery.validate.js"></script>-->
+<!--<script>-->
+
+<!--    let btnLogin = $('#btnLogin');-->
+<!--    let btnRegiter = $('#btnRegiter');-->
+
+
+<!--    function doLogin() {-->
+<!--        let username = $('#usernameLog').val();-->
+<!--        let password = $('#passwordLog').val();-->
+
+<!--        let user = {-->
+<!--            username,-->
+<!--            password-->
+<!--        }-->
+
+<!--        $.ajax({-->
+<!--            headers: {-->
+<!--                "accept": "application/json",-->
+<!--                "content-type": "application/json"-->
+<!--            },-->
+<!--            type: "POST",-->
+<!--            url: "http://localhost:8086/api/auth/login",-->
+<!--            data: JSON.stringify(user)-->
+<!--        })-->
+<!--            .done(() => {-->
+<!--                location.href = "/products";-->
+<!--                Swal.fire({-->
+<!--                    title: "The client has been deleted.",-->
+<!--                    icon: 'success',-->
+<!--                    showConfirmButton: false,-->
+<!--                    timer: 2000,-->
+<!--                    position: 'top-end',-->
+<!--                })-->
+<!--            })-->
+<!--            .fail(() => {-->
+<!--                alert("Error")-->
+<!--            })-->
+<!--    }-->
+
+<!--    function doRegiter() {-->
+<!--        let usernameReg = $('#usernameReg').val();-->
+<!--        let rePasswordReg = $('#rePasswordReg').val();-->
+
+<!--        let user = {-->
+<!--            username : usernameReg,-->
+<!--            password : rePasswordReg,-->
+<!--            role: {-->
+<!--                id : 2-->
+<!--            }-->
+<!--        }-->
+
+<!--        $.ajax({-->
+<!--            headers: {-->
+<!--                "accept": "application/json",-->
+<!--                "content-type": "application/json"-->
+<!--            },-->
+<!--            type: "POST",-->
+<!--            url: "http://localhost:8080/api/auth/register",-->
+<!--            data: JSON.stringify(user)-->
+<!--        })-->
+<!--            .done(() => {-->
+<!--                location.href = "/products";-->
+<!--            })-->
+<!--            .fail(() => {-->
+
+<!--            })-->
+
+<!--    }-->
+
+<!--    btnLogin.on('click', () => {-->
+<!--        $("#frmLogin").submit();-->
+<!--    })-->
+
+
+<!--    btnRegiter.on('click', () => {-->
+<!--        $("#frmRegiter").submit();-->
+<!--    })-->
+
+<!--    $("#frmLogin").validate({-->
+<!--        rules: {-->
+<!--            usernameLog: {-->
+<!--                required: true,-->
+<!--                isNumberWithSpace: false,-->
+<!--                navigator: false-->
+<!--            },-->
+<!--            passwordLog: {-->
+<!--                required: true,-->
+<!--            }-->
+<!--        },-->
+<!--        messages: {-->
+<!--            usernameLog: {-->
+<!--                required: "Please, enter username!",-->
+<!--                isNumberWithSpace: "Please, enter String",-->
+<!--                navigator: 'Number must be greater than 0',-->
+<!--            },-->
+<!--            passwordLog: {-->
+<!--                required: "Please, enter password!",-->
+<!--            }-->
+<!--        },-->
+<!--        errorLabelContainer: "#mdLogin .modal-alert-danger",-->
+<!--        errorPlacement: function (error, element) {-->
+<!--            error.appendTo("#mdLogin .modal-alert-danger");-->
+<!--        },-->
+<!--        showErrors: function (errorMap, errorList) {-->
+<!--            if (this.numberOfInvalids() > 0) {-->
+<!--                $("#mdLogin .modal-alert-danger").removeClass("hide").addClass("show");-->
+<!--            } else {-->
+<!--                $("#mdLogin .modal-alert-danger").removeClass("show").addClass("hide").empty();-->
+<!--                $("#frmLogin input.error").removeClass("error");-->
+<!--            }-->
+<!--            this.defaultShowErrors();-->
+<!--        },-->
+<!--        submitHandler: function () {-->
+<!--            doLogin();-->
+<!--        }-->
+<!--    })-->
+
+<!--    $("#frmRegiter").validate({-->
+<!--        rules: {-->
+<!--            usernameReg: {-->
+<!--                required: true,-->
+<!--                isNumberWithSpace: false,-->
+<!--                navigator: false,-->
+<!--                email: true-->
+<!--            },-->
+<!--            passwordReg: {-->
+<!--                required: true,-->
+<!--                minlength: 6-->
+<!--            },-->
+<!--            rePasswordReg: {-->
+<!--                equalTo: "#passwordReg"-->
+<!--            }-->
+<!--        },-->
+<!--        messages: {-->
+<!--            usernameReg: {-->
+<!--                required: "Please, enter username!",-->
+<!--                isNumberWithSpace: "Please, enter String",-->
+<!--                navigator: 'Number must be greater than 0',-->
+<!--                email: 'Email invalidate',-->
+<!--            },-->
+<!--            passwordReg: {-->
+<!--                required: "Please, enter password!",-->
+<!--                minlength: "Password must be at least 6 characters",-->
+<!--            },-->
+<!--            rePasswordReg: {-->
+<!--                equalTo: "password incorrect, please try again",-->
+<!--            }-->
+<!--        },-->
+<!--        errorLabelContainer: "#mdRegiter .modal-alert-danger",-->
+<!--        errorPlacement: function (error, element) {-->
+<!--            error.appendTo("#mdRegiter .modal-alert-danger");-->
+<!--        },-->
+<!--        showErrors: function (errorMap, errorList) {-->
+<!--            if (this.numberOfInvalids() > 0) {-->
+<!--                $("#mdRegiter .modal-alert-danger").removeClass("hide").addClass("show");-->
+<!--            } else {-->
+<!--                $("#mdRegiter .modal-alert-danger").removeClass("show").addClass("hide").empty();-->
+<!--                $("#frmRegiter input.error").removeClass("error");-->
+<!--            }-->
+<!--            this.defaultShowErrors();-->
+<!--        },-->
+<!--        submitHandler: function () {-->
+<!--            doRegiter();-->
+<!--        }-->
+<!--    })-->
+
+<!--    $.validator.addMethod("isNumberWithSpace", function (value, element) {-->
+<!--        return this.optional(element) || /^\s*[0-9,\s]+\s*$/i.test(value);-->
+<!--    }, "Vui lòng nhập giá trị số");-->
+<!--</script>-->
+<!--</body>-->
+
+<!--</html>-->
